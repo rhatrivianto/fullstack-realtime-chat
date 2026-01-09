@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: chat-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        fromDatabase:
+          name: chat-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dfltak207
+      - key: CLOUDINARY_API_KEY
+        value: 268595332421484
+      - key: CLOUDINARY_API_SECRET
+        value: RT4lCjrwcjCJyPx_kqT5_C5YoDU
+
+  - type: web
+    name: chat-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: chat-backend
+          type: web
+          property: host
